@@ -30,21 +30,62 @@ SlidingPuzzleState::SlidingPuzzleState(const int tiles[12])
             }
         }
     }
-    if(!isDuplicate) {
-        SlidingPuzzleState *puzzleState = new SlidingPuzzleState(tiles);
-    }
+//    if(!isDuplicate) {
+//        SlidingPuzzleState *puzzleState = new SlidingPuzzleState(tiles);
+//    }
 }
 
-
+// Up = 0, Down = 1, Left = 2, Right = 3
 void SlidingPuzzleState::GetMoves(LList<int> &l) {
+    int row, col;
+    GetEmptySquare(row, col);
+    if(row + 1) {
+        l.AddFront(0);
+    }
+    if(row - 1) {
+        l.AddFront(1);
+    }
+    if(col + 1) {
+        l.AddFront(2);
+    }
+    if(col - 1) {
+        l.AddFront(3);
+    }
     
 }
 bool SlidingPuzzleState::ApplyMove(int move){
-    
+    int row, col;
+    GetEmptySquare(row, col);
+    switch (move) {
+        case 0:
+            myBoard.tileValue[row*4+col] = myBoard.tileValue[(row+1)*4+col];
+            myBoard.tileValue[(row+1)*4+col] = 0;
+            return true;
+            break;
+        case 1:
+            myBoard.tileValue[row*4+col] = myBoard.tileValue[(row-1)*4+col];
+            myBoard.tileValue[(row-1)*4+col] = 0;
+            return true;
+            break;
+        case 2:
+            myBoard.tileValue[row*4+col] = myBoard.tileValue[(row)*4+col+1];
+            myBoard.tileValue[(row)*4+col+1] = 0;
+            return true;
+            break;
+        case 3:
+            myBoard.tileValue[row*4+col] = myBoard.tileValue[(row)*4+col-1];
+            myBoard.tileValue[(row)*4+col-1] = 0;
+            return true;
+            break;
+        default:
+            cout << "no moves valid" << endl;
+            break;
+    }
+    return false;
 }
 
 bool SlidingPuzzleState::UndoMove(int move){
-    
+    return false;
 }
 
 int SlidingPuzzleState::GetTileInSquare(int row, int col){
@@ -64,13 +105,24 @@ void SlidingPuzzleState::GetEmptySquare(int &row, int &col){
 }
 
 void SlidingPuzzleState::Print(){
-    
+    for(int i = 0; i < 12; i++) {
+        cout << myBoard.tileValue[i] << ", ";
+        if(i%4 == 0) {
+            cout << endl;
+        }
+    }
 }
 
 SlidingPuzzleState *SlidingPuzzleState::Clone(){
-    
+    SlidingPuzzleState *clonedState = new SlidingPuzzleState(myBoard.tileValue);
+    return clonedState;
 }
 
-bool IsSolution(){
-    
+bool SlidingPuzzleState::IsSolution(){
+    for(int i = 0; i < 12; i++) {
+        if(myBoard.tileValue[i] == i) {
+            return true;
+        }
+    }
+    return false;
 }
